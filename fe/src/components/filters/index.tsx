@@ -18,11 +18,11 @@ const capacityOptions: DropdownOption[] = [{ name: 8 }, { name: 9 }, { name: 10.
 
 export const Filters = () => {
   return (
-    <div>
+    <div className="px-4 sm:px-6 lg:px-0">
       <div className="mb-8 pt-6 flex max-w-xs mx-auto">
         <Search />
       </div>
-      <div className="grid grid-cols-4 gap-x-3 mb-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
         <div>
           <div className="block text-sm font-bold text-black text-lg mb-2">Sortuj</div>
           <Dropdown options={sortOptions} filter={'sort'} />

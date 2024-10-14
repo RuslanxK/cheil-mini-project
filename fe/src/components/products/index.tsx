@@ -43,7 +43,7 @@ export const Products = () => {
 
   return (
     <>
-      <div className="grid grid-cols-3 gap-x-4 gap-y-5">
+      <div className="px-4 sm:px-6 lg:px-0 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-5">
         {sortedProducts.map((product) => (
           <ProductCard key={product.code} {...product} />
         ))}
