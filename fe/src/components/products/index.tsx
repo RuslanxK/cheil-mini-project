@@ -1,13 +1,21 @@
-import { mockData } from '../../mock/data';
+import { useState } from 'react';
+import { useFetch } from 'hooks/useFetch';
 import { ProductCard } from '../cards/Product';
 import { Button } from '../button';
 import { useFilterContext } from '../../contexts/filters';
 import { ChevronDown } from 'react-feather';
+import { API_URLS } from 'utils/apiUrls';
+import { IProduct } from 'interfaces/product';
+import { Loader } from 'components/ui/loader';
+import { ErrorMessage } from 'components/ui/errorMessage';
 
 export const Products = () => {
   const { filters, query } = useFilterContext();
+  const { data: products, loading, error } = useFetch<IProduct[]>(API_URLS.products);
 
-  const searchByCode = mockData.filter((product) => {
+  const [visibleProductsCount, setVisibleProductsCount] = useState(6);
+
+  const searchByCode = products.filter((product) => {
     return product.code.toLowerCase().includes(query.toLowerCase());
   });
 
@@ -31,6 +39,24 @@ export const Products = () => {
     return 0;
   });
 
+  const visibleProducts = sortedProducts.slice(0, visibleProductsCount);
+
+  const loadMoreProducts = () => {
+    setVisibleProductsCount((prevCount) => prevCount + 6);
+  };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <Loader />
+      </div>
+    );
+  }
+
+  if (error) {
+    return <ErrorMessage message={error} />;
+  }
+
   if (filteredProducts.length === 0) {
     return (
       <div>
@@ -43,19 +69,22 @@ export const Products = () => {
 
   return (
     <>
-      <div className="px-4 sm:px-6 lg:px-0 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-5">
-        {sortedProducts.map((product) => (
+      <div className="px-4 sm:px-6 lg:px-0 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-5 pb-5">
+        {visibleProducts.map((product) => (
           <ProductCard key={product.code} {...product} />
         ))}
       </div>
-      <div className="flex justify-center mt-4">
-        <Button
-          variant={'tertiary'}
-          value={'Pokaż więcej'}
-          icon={<ChevronDown />}
-          onClick={() => console.log('some action')}
-        />
-      </div>
+
+      {visibleProductsCount < sortedProducts.length && (
+        <div className="flex justify-center pb-4">
+          <Button
+            variant={'tertiary'}
+            value={'Pokaż więcej'}
+            icon={<ChevronDown />}
+            onClick={loadMoreProducts}
+          />
+        </div>
+      )}
     </>
   );
 };
