@@ -1,25 +1,26 @@
 import { useState } from 'react';
-import { useFetch } from 'hooks/useFetch';
+import { useFetchData } from 'hooks/useAPI';
 import { ProductCard } from '../cards/Product';
 import { Button } from '../button';
 import { useFilterContext } from '../../contexts/filters';
 import { ChevronDown } from 'react-feather';
-import { API_URLS } from 'utils/apiUrls';
-import { IProduct } from 'interfaces/product';
 import { Loader } from 'components/ui/loader';
 import { ErrorMessage } from 'components/ui/errorMessage';
+import { API_URLS } from '../../utils/api';
+import { IProduct } from 'interfaces/product';
+
 
 export const Products = () => {
   const { filters, query } = useFilterContext();
-  const { data: products, loading, error } = useFetch<IProduct[]>(API_URLS.products);
+  const { data: products, status, error, isFetching } = useFetchData<IProduct[]>('products', API_URLS.products);
 
   const [visibleProductsCount, setVisibleProductsCount] = useState(6);
 
-  const searchByCode = products.filter((product) => {
+  const searchByCode = products?.filter((product) => {
     return product.code.toLowerCase().includes(query.toLowerCase());
   });
 
-  const filteredProducts = searchByCode.filter((product) => {
+  const filteredProducts = searchByCode?.filter((product) => {
     if (filters.capacity && product.capacity !== filters.capacity) {
       return false;
     }
@@ -29,7 +30,7 @@ export const Products = () => {
     return !(filters.feature && !product.features.includes(filters.feature));
   });
 
-  const sortedProducts = filteredProducts.sort((a, b) => {
+  const sortedProducts = filteredProducts?.sort((a, b) => {
     if (filters.sort === 'price') {
       return a.price.value - b.price.value;
     }
@@ -39,13 +40,14 @@ export const Products = () => {
     return 0;
   });
 
-  const visibleProducts = sortedProducts.slice(0, visibleProductsCount);
+  const visibleProducts = sortedProducts?.slice(0, visibleProductsCount);
 
   const loadMoreProducts = () => {
     setVisibleProductsCount((prevCount) => prevCount + 6);
   };
 
-  if (loading) {
+
+  if (status === 'loading' || isFetching) {
     return (
       <div className="flex justify-center items-center h-64">
         <Loader />
@@ -53,11 +55,15 @@ export const Products = () => {
     );
   }
 
-  if (error) {
-    return <ErrorMessage message={error} />;
+  if (status === 'error') {
+    const errorMessage = error && typeof error === 'object' && 'message' in error
+      ? (error as { message: string }).message
+      : 'An unknown error occurred';
+
+    return <ErrorMessage message={errorMessage} />;
   }
 
-  if (filteredProducts.length === 0) {
+  if (filteredProducts?.length === 0) {
     return (
       <div>
         <p className="text-center text-gray-500 text-xl mt-4">
@@ -70,12 +76,12 @@ export const Products = () => {
   return (
     <>
       <div className="px-4 sm:px-6 lg:px-0 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-5 pb-5">
-        {visibleProducts.map((product) => (
+        {visibleProducts?.map((product) => (
           <ProductCard key={product.code} {...product} />
         ))}
       </div>
 
-      {visibleProductsCount < sortedProducts.length && (
+      {visibleProductsCount < (sortedProducts?.length || 0) && (
         <div className="flex justify-center pb-4">
           <Button
             variant={'tertiary'}
