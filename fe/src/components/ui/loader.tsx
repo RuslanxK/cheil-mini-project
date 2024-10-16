@@ -1,9 +1,20 @@
 import React from 'react';
 
-export const Loader: React.FC = () => {
-  return (
-    <div className="flex justify-center items-center">
-      <div className="w-8 h-8 border-4 border-t-transparent border-blue-500 rounded-full animate-spin"></div>
-    </div>
-  );
-};
+interface SpinnerProps {
+  w: number;
+  h: number;
+  mr?: number;
+}
+
+export const Loader: React.FC<SpinnerProps> = ({ w, h, mr }) => (
+  <svg 
+    aria-hidden="true" 
+    className={`inline w-${w} h-${h} text-blue-700 animate-spin fill-blue-100 mr-${mr || 0}`} 
+    viewBox="0 0 100 100" 
+    fill="none" 
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <circle cx="50" cy="50" r="45" stroke="currentColor" strokeWidth="10" strokeLinecap="round" strokeDasharray="283" strokeDashoffset="75" fill="none"></circle>
+  </svg>
+);
+

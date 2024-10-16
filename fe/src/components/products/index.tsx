@@ -4,10 +4,11 @@ import { ProductCard } from '../cards/Product';
 import { Button } from '../button';
 import { useFilterContext } from '../../contexts/filters';
 import { ChevronDown } from 'react-feather';
-import { Loader } from 'components/ui/loader';
 import { ErrorMessage } from 'components/ui/errorMessage';
 import { API_URLS } from '../../utils/api';
 import { IProduct } from 'interfaces/product';
+import { Loader } from 'components/ui/loader';
+
 
 
 export const Products = () => {
@@ -50,7 +51,7 @@ export const Products = () => {
   if (status === 'loading' || isFetching) {
     return (
       <div className="flex justify-center items-center h-64">
-        <Loader />
+        <Loader h={8} w={8} mr={0}/>
       </div>
     );
   }

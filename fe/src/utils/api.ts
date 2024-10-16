@@ -18,6 +18,7 @@ const handleRequest = async (request: Promise<any>) => {
 
 export const API_URLS = {
   products: '/products',
+  product: '/product',
 };
 
 

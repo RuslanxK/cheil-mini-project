@@ -3,13 +3,29 @@ import { IProduct } from '../../../interfaces/product';
 import { parseCurrency } from '../../../utils/parseCurrency';
 import { useCartContext } from '../../../contexts/cart';
 import { EnergyBadge } from '../../badge/Energy';
+import { useDeleteData } from '../../../hooks/useAPI'
+import { API_URLS } from '../../../utils/api';
+import { Trash } from 'react-feather';
+import { ErrorMessage } from 'components/ui/errorMessage';
+import { Loader } from 'components/ui/loader';
+import { useState } from 'react';
+
 
 export const ProductCard = (props: IProduct) => {
   const { items, setItems } = useCartContext();
-  const { code, name, capacity, color, dimensions, features, energyClass, price, image } = props;
+  const { code, name, capacity, color, dimensions, features, energyClass, price, image, _id } = props;
   const { value, currency, installment, validTo, validFrom } = price;
   const parseTitle = `${code}, ${name}, ${capacity}kg, ${color}`;
   const parseFeatures = features.join(', ');
+  const [isDeleted, setIsDeleted] = useState(false); // Track deletion animation
+
+
+  const deleteProductUrl = `${API_URLS.product}/${_id}`;
+  
+  const { mutate: deleteProduct, isLoading, isError, error } = useDeleteData(deleteProductUrl, 'products');
+
+  console.log(error)
+  console.log(isError)
 
   const addToCart = (product: IProduct) => {
     setItems([...items, product]);
@@ -26,9 +42,29 @@ export const ProductCard = (props: IProduct) => {
     isInCart ? removeFromCart(props) : addToCart(props);
   };
 
+  const handleDelete = () => {
+    setIsDeleted(true); 
+    setTimeout(() => {
+      deleteProduct(); 
+    }, 500); 
+  };
+
   return (
-    <div className="flex flex-col bg-white rounded-2xl p-6">
-      <div className={'flex justify-center mb-4'}>
+    <div className={`flex flex-col bg-white rounded-2xl p-6 relative transform transition-all duration-500 ease-in-out ${isDeleted ? 'opacity-0 scale-75' : 'opacity-100 scale-100'}`}>
+
+      {isLoading ? (
+        <Loader w={5} h={5} mr={0} />
+      ) : (
+        <button
+          className="absolute top-2 right-2 p-2 bg-red-100 rounded-full hover:bg-red-500 hover:text-white transition-colors"
+          onClick={handleDelete}
+        >
+          <Trash size={15} />
+        </button>
+      )}
+
+
+      <div className="flex justify-center mb-4">
         <img src={image} alt={name} className="h-48 object-cover rounded-2xl" />
       </div>
       <h3 className="text-lg text-black font-bold mb-9">{parseTitle}</h3>
@@ -67,6 +103,10 @@ export const ProductCard = (props: IProduct) => {
           onClick={handleAddToCart}
         />
       </div>
+
+      {isError && error && (
+       <ErrorMessage message={error.message || 'Failed to delete the product.'} />
+      )}
     </div>
   );
 };
