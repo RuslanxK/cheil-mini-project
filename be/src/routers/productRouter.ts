@@ -30,6 +30,7 @@ router.put(
   "/product/:id",
   async (req: Request<{ id: string }, {}, IProduct>, res: Response) => {
     try {
+      
       const updatedProduct = await Product.findByIdAndUpdate(
         req.params.id,
         req.body,
@@ -47,6 +48,7 @@ router.put(
 
 router.delete("/product/:id", async (req: Request, res: Response) => {
   try {
+
     const deletedProduct = await Product.findByIdAndDelete(req.params.id);
     if (!deletedProduct) {
       return res.status(404).json({ error: "Product not found" });

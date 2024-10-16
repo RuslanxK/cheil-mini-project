@@ -5,11 +5,11 @@ import { useCartContext } from '../../../contexts/cart';
 import { EnergyBadge } from '../../badge/Energy';
 import { useDeleteData } from '../../../hooks/useAPI'
 import { API_URLS } from '../../../utils/api';
-import { Trash } from 'react-feather';
+import { Trash, Edit2} from 'react-feather';
 import { ErrorMessage } from 'components/ui/errorMessage';
 import { Loader } from 'components/ui/loader';
 import { useState } from 'react';
-
+import { UpdateProductPopup } from 'popups/updateProduct';
 
 export const ProductCard = (props: IProduct) => {
   const { items, setItems } = useCartContext();
@@ -17,15 +17,13 @@ export const ProductCard = (props: IProduct) => {
   const { value, currency, installment, validTo, validFrom } = price;
   const parseTitle = `${code}, ${name}, ${capacity}kg, ${color}`;
   const parseFeatures = features.join(', ');
-  const [isDeleted, setIsDeleted] = useState(false); // Track deletion animation
+  const [isDeleted, setIsDeleted] = useState(false);
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false); 
 
 
   const deleteProductUrl = `${API_URLS.product}/${_id}`;
   
   const { mutate: deleteProduct, isLoading, isError, error } = useDeleteData(deleteProductUrl, 'products');
-
-  console.log(error)
-  console.log(isError)
 
   const addToCart = (product: IProduct) => {
     setItems([...items, product]);
@@ -43,17 +41,31 @@ export const ProductCard = (props: IProduct) => {
   };
 
   const handleDelete = () => {
-    setIsDeleted(true); 
-    setTimeout(() => {
-      deleteProduct(); 
-    }, 500); 
+    deleteProduct(undefined, {
+      onSuccess: () => {
+        setIsDeleted(true); 
+      },
+      onError: (err: any) => {
+        console.error('Failed to delete the product:', err.message);
+        setIsDeleted(false);
+      },
+    });
+  };
+
+
+  const handleUpdate = () => {
+    setIsUpdateModalOpen(true);
+  };
+
+  const closeUpdateModal = () => {
+    setIsUpdateModalOpen(false); 
   };
 
   return (
     <div className={`flex flex-col bg-white rounded-2xl p-6 relative transform transition-all duration-500 ease-in-out ${isDeleted ? 'opacity-0 scale-75' : 'opacity-100 scale-100'}`}>
 
       {isLoading ? (
-        <Loader w={5} h={5} mr={0} />
+        <Loader mr={0} />
       ) : (
         <button
           className="absolute top-2 right-2 p-2 bg-red-100 rounded-full hover:bg-red-500 hover:text-white transition-colors"
@@ -62,6 +74,13 @@ export const ProductCard = (props: IProduct) => {
           <Trash size={15} />
         </button>
       )}
+
+       <button
+          className="absolute top-11 right-2 p-2 bg-green-100 rounded-full hover:bg-green-500 hover:text-white transition-colors"
+          onClick={handleUpdate}
+        >
+          <Edit2 size={15} />
+        </button>
 
 
       <div className="flex justify-center mb-4">
@@ -107,6 +126,9 @@ export const ProductCard = (props: IProduct) => {
       {isError && error && (
        <ErrorMessage message={error.message || 'Failed to delete the product.'} />
       )}
+
+      <UpdateProductPopup isOpen={isUpdateModalOpen} onClose={closeUpdateModal} data={props} />
+    
     </div>
   );
 };

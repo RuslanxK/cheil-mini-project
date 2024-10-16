@@ -1,3 +1,13 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+.container-with-scrollbar {
+    overflow-x: auto;
+    overflow-y: hidden; /* Hide vertical scroll */
+    scrollbar-width: thin; /* Firefox */
+    scrollbar-color: #b6b6b6 #f1f1f1; /* Handle and Track colors for Firefox */
+  }
+  
+ 

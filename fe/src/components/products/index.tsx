@@ -3,19 +3,22 @@ import { useFetchData } from 'hooks/useAPI';
 import { ProductCard } from '../cards/Product';
 import { Button } from '../button';
 import { useFilterContext } from '../../contexts/filters';
-import { ChevronDown } from 'react-feather';
+import { ChevronDown, Plus } from 'react-feather';
 import { ErrorMessage } from 'components/ui/errorMessage';
 import { API_URLS } from '../../utils/api';
 import { IProduct } from 'interfaces/product';
 import { Loader } from 'components/ui/loader';
-
+import { AddProductPopup } from 'popups/addProduct';
 
 
 export const Products = () => {
+
+  const [isAddProductOpen, setIsAddProductOpen] = useState(false);
+  const [visibleProductsCount, setVisibleProductsCount] = useState(6);
+
+
   const { filters, query } = useFilterContext();
   const { data: products, status, error, isFetching } = useFetchData<IProduct[]>('products', API_URLS.products);
-
-  const [visibleProductsCount, setVisibleProductsCount] = useState(6);
 
   const searchByCode = products?.filter((product) => {
     return product.code.toLowerCase().includes(query.toLowerCase());
@@ -48,10 +51,19 @@ export const Products = () => {
   };
 
 
+  const openAddProductModal = () => {
+    setIsAddProductOpen(true);
+  };
+
+  const closeAddProductModal = () => {
+    setIsAddProductOpen(false);
+  };
+
+
   if (status === 'loading' || isFetching) {
     return (
       <div className="flex justify-center items-center h-64">
-        <Loader h={8} w={8} mr={0}/>
+        <Loader mr={0}/>
       </div>
     );
   }
@@ -92,6 +104,17 @@ export const Products = () => {
           />
         </div>
       )}
+
+        <button
+        className="fixed bottom-10 right-10 p-4 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 transition-all flex items-center justify-center"
+        onClick={openAddProductModal}
+      >
+        <Plus size={20} />
+      </button>
+
+       <AddProductPopup isOpen={isAddProductOpen} onClose={closeAddProductModal} />
+
+
     </>
   );
 };

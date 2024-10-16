@@ -12,7 +12,7 @@ const handleRequest = async (request: Promise<any>) => {
     return response.data;
   } catch (error: any) {
     console.error('API Error:', error.message);
-    throw new Error(error || 'API Request failed');
+    throw error.response?.data || new Error('API Request failed');
   }
 };
 
@@ -22,18 +22,10 @@ export const API_URLS = {
 };
 
 
-export const getData = (url: string) => {
-  return handleRequest(api.get(url));
-};
+export const getData = (url: string) => handleRequest(api.get(url));
 
-export const createData = (url: string, body: any) => {
-  return handleRequest(api.post(url, body));
-};
+export const createData = (url: string, body: any) => handleRequest(api.post(url, body));
 
-export const updateData = (url: string, body: any) => {
-  return handleRequest(api.put(url, body));
-};
+export const updateData = (url: string, body: any) => handleRequest(api.put(url, body));
 
-export const deleteData = (url: string) => {
-  return handleRequest(api.delete(url));
-};
+export const deleteData = (url: string) => handleRequest(api.delete(url));
