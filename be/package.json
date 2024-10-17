@@ -4,8 +4,7 @@
   "description": "",
   "main": "src/index.ts",
   "scripts": {
-    "dev": "nodemon src/index.ts",
-    "build": "rm -rf build/ && prettier --write src/ && tsc"
+    "dev": "nodemon src/index.ts"
   },
   "author": "",
   "license": "ISC",
