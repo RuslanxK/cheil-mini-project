@@ -3,7 +3,7 @@ node_modules/
 
 # Ignore any build output
 build
-dist
+
 
 # Ignore environment files
 .env
