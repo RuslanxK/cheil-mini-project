@@ -1,6 +1,7 @@
 import { Router, Request, Response } from "express";
 import Product from "../models/product";
 import { IProduct } from "../interfaces/IProduct";
+import { checkUniqueProductCode } from "../utils/productUtils";
 
 const router = Router();
 
@@ -17,6 +18,12 @@ router.post(
   "/products",
   async (req: Request<{}, {}, IProduct>, res: Response) => {
     try {
+
+      const existingProduct = await checkUniqueProductCode(req.body.code);
+      if (existingProduct) {
+        return res.status(400).json({ error: "Product code must be unique" });
+      }
+
       const newProduct = new Product(req.body);
       const savedProduct = await newProduct.save();
       res.status(201).json(savedProduct);
@@ -31,6 +38,11 @@ router.put(
   async (req: Request<{ id: string }, {}, IProduct>, res: Response) => {
     try {
       
+      const existingProduct = await checkUniqueProductCode(req.body.code, req.params.id);
+      if (existingProduct) {
+        return res.status(400).json({ error: "Product code must be unique" });
+      }
+
       const updatedProduct = await Product.findByIdAndUpdate(
         req.params.id,
         req.body,

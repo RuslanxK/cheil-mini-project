@@ -16,7 +16,7 @@ const PriceSchema: Schema = new Schema({
 
 const ProductSchema: Schema = new Schema({
   image: { type: String, required: true },
-  code: { type: String, required: true },
+  code: { type: String, required: true, unique: true },
   name: { type: String, required: true },
   color: { type: String, required: true },
   capacity: { type: Number, required: true },

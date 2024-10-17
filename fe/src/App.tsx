@@ -1,6 +1,7 @@
 import { Products } from './components/products';
 import { Filters } from './components/filters';
 import { FiltersProvider } from './contexts/filters';
+import { AddProduct } from 'components/products/addProduct';
 
 function App() {
   return (
@@ -9,6 +10,7 @@ function App() {
         <FiltersProvider>
           <Filters />
           <Products />
+          <AddProduct />
         </FiltersProvider>
       </div>
     </div>

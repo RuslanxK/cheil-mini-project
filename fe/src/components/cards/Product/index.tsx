@@ -124,10 +124,11 @@ export const ProductCard = (props: IProduct) => {
       </div>
 
       {isError && error && (
-       <ErrorMessage message={error.message || 'Failed to delete the product.'} />
+       <ErrorMessage message={error.error} />
       )}
 
       <UpdateProductPopup isOpen={isUpdateModalOpen} onClose={closeUpdateModal} data={props} />
+      
     
     </div>
   );
