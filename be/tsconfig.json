@@ -3,9 +3,10 @@
         "forceConsistentCasingInFileNames": true,
         "module": "commonjs",
         "esModuleInterop": true,
-        "outDir": "./dist",
+        "outDir": "dist",
         "rootDir": "./src",
         "target": "es6",
+        "declaration": true,
         "skipLibCheck": true,
         "strict": true
     }
